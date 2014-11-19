@@ -524,19 +524,24 @@ var currentStep = 0;
 
 var goToStep = function(step) {
     if (step < 0) step = 0;
-    if (step >= steps.length) step = steps.length - 1;
+    if (step > steps.length) step = steps.length;
     currentStep = step;
 
-    cookingHeaderText.html = "Step " + (step + 1) + " of " + (steps.length);
-    cookingProgressBar.animate({
-        properties: { width: step * 640 / steps.length },
-        time: 0.3,
-    });
+    if (step == steps.length) {
+        doneRecipeScreen.visible = true;
+    } else {
+        doneRecipeScreen.visible = false;
+        cookingHeaderText.html = "Step " + (step + 1) + " of " + (steps.length);
+        cookingProgressBar.animate({
+            properties: { width: step * 640 / steps.length },
+            time: 0.3,
+        });
 
-    cookingScrollView.animate({
-        properties: { scrollY: step * 1100 },
-        time: 0.3,
-    });
+        cookingScrollView.animate({
+            properties: { scrollY: step * 1100 },
+            time: 0.3,
+        });
+    }
 };
 
 var cookingFooter = new Layer({x:0,y:980,width:640,height:157,
@@ -553,6 +558,14 @@ cookingFooter.addSubLayer(cookingDoneButton);
 cookingDoneButton.on(Events.Click, function() {
     goToStep(currentStep + 1);
 });
+
+var doneRecipeScreen = new Layer({x:0,y:0,width:640,height:1136,
+                                 image:"doneRecipeScreen.png"});
+doneRecipeScreen.visible = false;
+doneRecipeScreen.on(Events.Click, function() {
+    switchToScreen(lastScreen);
+});
+cookingScreen.addSubLayer(doneRecipeScreen);
 
 goToStep(0);
 

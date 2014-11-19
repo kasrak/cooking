@@ -357,8 +357,179 @@ recipeOverviewBackButton.on(Events.Click, function() { switchToScreen(lastScreen
 var recipeOverviewConfirmButton = new Layer({x:445,y:1050,width:173,height:65,
                                             image:"recipeOverviewConfirmButton.png"});
 recipeOverviewScreen.addSubLayer(recipeOverviewConfirmButton);
+recipeOverviewConfirmButton.on(Events.Click, function() {
+    var _lastScreen = lastScreen;
+    switchToScreen(cookingScreen);
+    lastScreen = _lastScreen;
+});
 
 setRecipeServingSize(1);
+
+///////////////////////////////////////////////////////////////////////////////
+// Cooking
+///////////////////////////////////////////////////////////////////////////////
+
+var cookingScreen = new Layer({x:0,y:0,width:640,height:1136});
+cookingScreen.backgroundColor = "white";
+app.addSubLayer(cookingScreen);
+
+var cookingHeader = new Layer({x:0,y:0,width:640,height:70});
+cookingHeader.backgroundColor = "#e9e9e9";
+cookingScreen.addSubLayer(cookingHeader);
+
+var cookingProgressBar = new Layer({x:0,y:0,width:0,height:70});
+cookingProgressBar.backgroundColor = "#BED9C0";
+cookingHeader.addSubLayer(cookingProgressBar);
+
+var cookingQuitButton = new Layer({x:582,y:10,width:48,height:48,
+                                  image:"quitRecipeButton.png"});
+cookingHeader.addSubLayer(cookingQuitButton);
+cookingQuitButton.on(Events.Click, function() {
+    switchToScreen(lastScreen);
+});
+
+var cookingHeaderText = new Layer({x:20,y:20,width:300,height:30});
+cookingHeaderText.backgroundColor = "transparent";
+cookingHeaderText.style.color = "#6e6e6e";
+cookingHeaderText.style["font-size"] = "18pt";
+cookingHeaderText.style["font-weight"] = "bold";
+cookingHeaderText.html = "Step 1 of 15";
+cookingHeader.addSubLayer(cookingHeaderText);
+
+var cookingScrollView = new Layer({x:0,y:70,width:640,height:1066});
+cookingScrollView.backgroundColor = "transparent";
+cookingScrollView.scrollVertical = true;
+cookingScreen.addSubLayer(cookingScrollView);
+
+var cookingStep = function(image, title, body) {
+    var step = new Layer({x:0, y:0, width: 640, height: 1066});
+    step.backgroundColor = "transparent";
+
+    var stepImage = new Layer({x:0, y: 0, width: 640, height: 425, image: image});
+    step.addSubLayer(stepImage);
+
+    var stepText = new Layer({x:20, y: 445, width: 590, height: 470});
+    stepText.backgroundColor = "transparent";
+    stepText.html = "<div class='recipe content'><h3>" + title + "</h3>" +
+        body + "</div>";
+    step.addSubLayer(stepText);
+
+    return step;
+};
+
+var steps = [
+    ["recipeImage1.jpg",
+     "Preheat the oven to <a>400°F</a>.",
+     "<h4>Why?</h4>" +
+     "<p>When you don't preheat, you cook your food at a lower temperature " +
+     "as your oven heats up for the first 5-15 minutes, depending on the " +
+     "target temperature and your oven's strength. For forgiving foods, " +
+     "like a casserole, this may not affect you much&mdash;you'll just " +
+     "have to bake longer than the recipe says to.</p>"
+    ],
+    ["recipeImage2.jpg",
+     "Prepare the turkey breast.",
+     "<p>Pat the turkey breast dry with paper towels, season both sides " +
+     "liberally with kosher salt and freshly ground black pepper.</p<"
+    ],
+    ["recipeImage3.jpg",
+     "Prepare your skillet.",
+     "<p>Heat a large cast-iron skillet over very high heat. As it heats up, " +
+     "add 1/4 cup of duck fat to the skillet.</p>"
+    ],
+    ["recipeImage4.jpg",
+     "Cook the turkey.",
+     "<p>When the fat begins to shimmer, add the turkey breast, skin-side down, " +
+     "and cook until dark golden brown. It will take 3 to 5 minutes.</p>"
+    ],
+    ["recipeImage5.jpg",
+     "Remove skillet from heat.",
+     "<p>Remove the skillet from heat, and remove the turkey from " +
+     "the skillet. You can put it on a plate.</p>" +
+     "<p>Stir 2 tablespoons of unsalted butter into the pan juices.</p>"
+    ],
+    ["recipeImage6.jpg",
+     "Put the turkey back in the skillet.",
+     "<p>Arrange 1 bunch of thyme branches in the " +
+     "skillet to make a bed for the turkey.</p>" +
+     "<p>Place the turkey, seared-side-up, on the thyme " +
+     "and sprinkle 4 cloves of smashed garlic around the sides.</p>"
+    ],
+    ["recipeImage7.jpg",
+     "Baste the turkey.",
+     "<p>Basting is the process of brushing, pouring, or spooning " +
+     "liquid over a food to make it moist and juicy from top to " +
+     "bottom and to give it a wonderfully golden look when cooked.</p>" +
+     "<p>Get the juices in the pan over the turkey until it’s " +
+     "entirely covered."
+    ],
+    ["recipeImage8.jpg",
+     "Roast the turkey.",
+     "<p>Transfer the skillet to the oven.</p>" +
+     "<p>Roast until meat thermometer inserted into the thickest " +
+     "part of the breast without touching bone registers 155°F. " +
+     "It will take about one hour. Baste every 15 minutes."
+    ],
+    ["recipeImage9.jpg",
+     "Prepare the puree.",
+     "<p>While the turkey roasts, let’s prepare the green onion puree.</p>" +
+     "<p>In a medium saucepan, heat 1/2 cup of vegetable stock over " +
+     "medium-high heat.</p>"
+    ],
+    ["recipeImage10.jpg",
+     "Prepare the green onions.",
+     "<p>Trim the ends off, then roughly chop 1/2 pound of green onions.</p>"
+    ],
+    ["recipeImage11.jpg",
+     "Add green onions to saucepan.",
+     "<p>Pour the chopped green onions into vegetable stock. Keep the " +
+     "saucepan on medium-high and simmer until the green onion becomes " +
+     "tender. This will take about 5 minutes.</p>"
+    ],
+    ["recipeImage12.jpg",
+     "Blend the green onions.",
+     "<p>Using a slotted spoon, transfer the green onions to a " +
+     "blender, saving the liquids in the saucepan.</p>" +
+     "<p>Blend on high until very smooth, about 5 minutes. " +
+     "Add a splash of cooking liquid if necessary to help " +
+     "the blender puree.</p>"
+    ],
+    ["recipeImage13.jpg",
+     "Add cream cheese.",
+     "<p>Add the cream cheese and blend for 2 more minutes. " +
+     "Season with salt to taste.</p>"
+    ],
+    ["recipeImage14.jpg",
+     "Wait for turkey to roast.",
+     "<p>Once the meat thermometer registers 155°F, baste " +
+     "once more and transfer the turkey to a platter.</p>" +
+     "<p>Let the turkey rest for at least 20 minutes before " +
+     "slicing and serving.</p>"
+    ],
+    ["recipeImage15.jpg",
+     "Serve the turkey.",
+     "<p>Slice the turkey breast across the grain and serve " +
+     "with green-onion puree.</p><p>Enjoy!</p>"
+    ],
+];
+
+steps.forEach(function(step, i) {
+    var stepLayer = cookingStep.apply(null, step);
+    stepLayer.minY = i * 1100;
+    cookingScrollView.addSubLayer(stepLayer);
+});
+
+var cookingFooter = new Layer({x:0,y:980,width:640,height:157,
+                              image:"recipeBottomOverlay.png"});
+cookingScreen.addSubLayer(cookingFooter);
+
+var cookingQuestionButton = new Layer({x:20,y:65,width:72,height:65,
+                                      image:"recipeQuestionButton.png"});
+cookingFooter.addSubLayer(cookingQuestionButton);
+
+var cookingDoneButton = new Layer({x:548,y:65,width:72,height:65,
+                                      image:"recipeDoneButton.png"});
+cookingFooter.addSubLayer(cookingDoneButton);
 
 ///////////////////////////////////////////////////////////////////////////////
 // Helper functions
@@ -453,9 +624,10 @@ function navbarClickHandler(event) {
 
 var lastScreen = discoverScreen;
 var screens = [discoverScreen, favoritesScreen, recentsScreen, profileScreen,
-               recipeOverviewScreen];
+               recipeOverviewScreen, cookingScreen];
 var currentScreen = null;
 switchToScreen(discoverScreen);
+switchToScreen(cookingScreen); //xxx
 
 document.body.addEventListener("click", function(event) {
     if (event.toElement.nodeName == "A") {

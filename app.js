@@ -630,6 +630,7 @@ switchToScreen(discoverScreen);
 switchToScreen(cookingScreen); //xxx
 
 document.body.addEventListener("click", function(event) {
+    event = Events.touchEvent(event);
     if (event.toElement.nodeName == "A") {
         pushPopover(event.toElement.innerText);
     }

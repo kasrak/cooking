@@ -253,6 +253,57 @@ profileScreen.addSubLayer(navbarProfile);
 // Recipe overview screen
 ///////////////////////////////////////////////////////////////////////////////
 
+var htmlForIngredientsAndTools = function(servingSize) {
+    var ingredients = [
+        [1, "", "bone-in <a>turkey breast</a>"],
+        [null, "", "<a>kosher salt</a>"],
+        [null, "", "freshly ground <a>black pepper</a>"],
+        [0.25, "cup", "<a>duck fat</a>"],
+        [2, "tablespoons", "<a>unsalted butter</a>"],
+        [1, "bunch", "<a>thyme</a>"],
+        [4, "", "<a>garlic cloves</a>, smashed and peeled"],
+        [0.5, "pound", "<a>green onions</a>"],
+        [0.5, "cup", "low-sodium <a>vegetable stock</a>"],
+        [2, "teaspoons", "<a>cream cheese</a>"],
+    ];
+
+    var tools = [
+        "<a>oven</a>",
+        "<a>paper towels</a>",
+        "<a>cast-iron skillet</a>",
+        "<a>meat thermometer</a>",
+        "<a>saucepan</a>",
+        "<a>slotted spoon</a>",
+        "<a>blender</a>",
+    ];
+
+    var output = "<div class='content'><h3>Ingredients</h3>";
+
+    output += "<ul>";
+    ingredients.forEach(function(ingredient) {
+        var quantity = servingSize * ingredient[0];
+        var unit = ingredient[1];
+        var name = ingredient[2];
+
+        output += "<li>" +
+            (quantity === 0 ? "" : quantity + " " + unit + " ") +
+            name + "</li>";
+    });
+    output += "</ul>";
+
+    output += "<h3>Tools</h3>";
+
+    output += "<ul>";
+    tools.forEach(function(tool) {
+        output += "<li>" + tool + "</li>";
+    });
+    output += "</ul>";
+
+    output += "</div>";
+
+    return output;
+};
+
 var recipeOverviewScreen = new Layer({x:0,y:0,width:640,height:1136});
 app.addSubLayer(recipeOverviewScreen);
 recipeOverviewScreen.backgroundColor = "white";
@@ -284,8 +335,17 @@ function setRecipeServingSize(servingSize) {
     if (servingSize < 1) servingSize = 1;
     currentRecipeServingSize = servingSize;
     recipeServingSizeNumber.html = servingSize;
+    recipeOverviewContent.html = htmlForIngredientsAndTools(servingSize);
 }
-setRecipeServingSize(1);
+
+var recipeOverviewScrollview = new Layer({x:0,y:380,width:640,height:640});
+recipeOverviewScrollview.backgroundColor = "transparent";
+recipeOverviewScrollview.scrollVertical = true;
+recipeOverviewScreen.addSubLayer(recipeOverviewScrollview);
+
+var recipeOverviewContent = new Layer({x:30,y:30,width:590,height:1000});
+recipeOverviewContent.backgroundColor = "transparent";
+recipeOverviewScrollview.addSubLayer(recipeOverviewContent);
 
 var recipeOverviewBottomOverlay = new Layer({x:0,y:980,width:640,height:157,image:"recipeBottomOverlay.png"});
 recipeOverviewScreen.addSubLayer(recipeOverviewBottomOverlay);
@@ -297,6 +357,8 @@ recipeOverviewBackButton.on(Events.Click, function() { switchToScreen(lastScreen
 var recipeOverviewConfirmButton = new Layer({x:445,y:1050,width:173,height:65,
                                             image:"recipeOverviewConfirmButton.png"});
 recipeOverviewScreen.addSubLayer(recipeOverviewConfirmButton);
+
+setRecipeServingSize(1);
 
 ///////////////////////////////////////////////////////////////////////////////
 // Helper functions

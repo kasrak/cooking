@@ -358,6 +358,7 @@ var recipeOverviewConfirmButton = new Layer({x:445,y:1050,width:173,height:65,
                                             image:"recipeOverviewConfirmButton.png"});
 recipeOverviewScreen.addSubLayer(recipeOverviewConfirmButton);
 recipeOverviewConfirmButton.on(Events.Click, function() {
+    goToStep(0);
     var _lastScreen = lastScreen;
     switchToScreen(cookingScreen);
     lastScreen = _lastScreen;
@@ -393,7 +394,7 @@ cookingHeaderText.backgroundColor = "transparent";
 cookingHeaderText.style.color = "#6e6e6e";
 cookingHeaderText.style["font-size"] = "18pt";
 cookingHeaderText.style["font-weight"] = "bold";
-cookingHeaderText.html = "Step 1 of 15";
+cookingHeaderText.on(Events.Click, function() { goToStep(currentStep); });
 cookingHeader.addSubLayer(cookingHeaderText);
 
 var cookingScrollView = new Layer({x:0,y:70,width:640,height:1066});
@@ -519,6 +520,25 @@ steps.forEach(function(step, i) {
     cookingScrollView.addSubLayer(stepLayer);
 });
 
+var currentStep = 0;
+
+var goToStep = function(step) {
+    if (step < 0) step = 0;
+    if (step >= steps.length) step = steps.length - 1;
+    currentStep = step;
+
+    cookingHeaderText.html = "Step " + (step + 1) + " of " + (steps.length);
+    cookingProgressBar.animate({
+        properties: { width: step * 640 / steps.length },
+        time: 0.3,
+    });
+
+    cookingScrollView.animate({
+        properties: { scrollY: step * 1100 },
+        time: 0.3,
+    });
+};
+
 var cookingFooter = new Layer({x:0,y:980,width:640,height:157,
                               image:"recipeBottomOverlay.png"});
 cookingScreen.addSubLayer(cookingFooter);
@@ -530,6 +550,11 @@ cookingFooter.addSubLayer(cookingQuestionButton);
 var cookingDoneButton = new Layer({x:548,y:65,width:72,height:65,
                                       image:"recipeDoneButton.png"});
 cookingFooter.addSubLayer(cookingDoneButton);
+cookingDoneButton.on(Events.Click, function() {
+    goToStep(currentStep + 1);
+});
+
+goToStep(0);
 
 ///////////////////////////////////////////////////////////////////////////////
 // Helper functions

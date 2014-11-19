@@ -525,6 +525,18 @@ var currentStep = 0;
 var goToStep = function(step) {
     if (step < 0) step = 0;
     if (step > steps.length) step = steps.length;
+
+    if (step === 0) {
+        timers.forEach(function(timer) {
+            timer.destroy();
+        });
+        timers.length = 0;
+    }
+
+    if (currentStep == 7 && step == 8) {
+        addTimer(15*60);
+    }
+
     currentStep = step;
 
     if (step == steps.length) {
@@ -546,6 +558,7 @@ var goToStep = function(step) {
 
 var cookingFooter = new Layer({x:0,y:980,width:640,height:157,
                               image:"recipeBottomOverlay.png"});
+cookingFooter.clip = false;
 cookingScreen.addSubLayer(cookingFooter);
 
 var cookingQuestionButton = new Layer({x:20,y:65,width:72,height:65,
@@ -558,6 +571,47 @@ cookingFooter.addSubLayer(cookingDoneButton);
 cookingDoneButton.on(Events.Click, function() {
     goToStep(currentStep + 1);
 });
+
+var timers = [];
+function secondsToClock(seconds) {
+    var mins = Math.floor(seconds / 60);
+    var secs = seconds - mins * 60;
+    return mins + ":" + (secs < 10 ? "0" + secs : secs);
+}
+
+function addTimer(startSeconds) {
+    var timer = new Layer({x:107 + timers.length * 127, y:65, width: 117, height: 65,
+                          image: "timerButton.png"});
+    timer.clip = false;
+    timers.push(timer);
+    cookingFooter.addSubLayer(timer);
+
+    var timerText = new Layer({x:20,y:17,height:45,width:97});
+    timerText.backgroundColor = "transparent";
+    timerText.style.color = "#737E90";
+    timerText.html = secondsToClock(startSeconds);
+    timer.addSubLayer(timerText);
+
+    var timerTooltip = new Layer({x:-80, y:-146, width:291, height:165,
+                                 image: "timerTooltip.png"});
+    timer.addSubLayer(timerTooltip);
+    setTimeout(function() {
+        timerTooltip.visible = false;
+    }, 2000);
+
+    timer.on(Events.Click, function() {
+        timerTooltip.visible = !timerTooltip.visible;
+    });
+
+    var interval = setInterval(function() {
+        startSeconds--;
+        timerText.html = secondsToClock(startSeconds);
+
+        if (startSeconds <= 0) {
+            clearInterval(interval);
+        }
+    }, 1000);
+}
 
 var doneRecipeScreen = new Layer({x:0,y:0,width:640,height:1136,
                                  image:"doneRecipeScreen.png"});

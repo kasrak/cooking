@@ -364,6 +364,58 @@ setRecipeServingSize(1);
 // Helper functions
 ///////////////////////////////////////////////////////////////////////////////
 
+var popoverStack = [];
+var popoverOverlay = new Layer({x:0,y:0,width:640,height:1136});
+popoverOverlay.backgroundColor = "rgba(0, 0, 0, 0.7)";
+popoverOverlay.center();
+popoverOverlay.visible = false;
+
+function pushPopover(title, htmlContent) {
+    popoverOverlay.visible = true;
+
+    var popoverFrame = new Layer({x:0,y:92+popoverStack.length*15,
+                                 width:639,height:1043,
+                                 image:"popoverFrame.png"});
+
+    popoverFrame.on(Events.Click, function(event) {
+        event = Events.touchEvent(event);
+        if (event.clientX - popoverFrame.screenFrame.x > 530 &&
+            event.clientY - popoverFrame.screenFrame.y < 100) {
+            popPopover();
+        }
+    });
+
+    popoverFrame.html = "<div class='popover content'>" +
+        "<h3>" + title + "</h3>" +
+        (htmlContent || "") +
+        "</div>";
+
+    if (title == "vegetable stock") {
+        var content = new Layer({x:40,y:0,width:570,height:510,
+                                image:"popoverVegetableStockContent.png"});
+        popoverFrame.addSubLayer(content);
+
+        content.on(Events.Click, function() {
+            pushPopover("chicken stock");
+        });
+    }
+
+    popoverOverlay.addSubLayer(popoverFrame);
+    popoverFrame.bringToFront();
+    popoverStack.push(popoverFrame);
+
+    return popoverFrame;
+}
+
+function popPopover() {
+    var popover = popoverStack.pop();
+    if (popover) {
+        popover.destroy();
+    }
+
+    popoverOverlay.visible = popoverStack.length > 0;
+}
+
 function toggleViews(views, viewToShow) {
     views.forEach(function(view) {
         view.visible = (view == viewToShow);
@@ -404,3 +456,9 @@ var screens = [discoverScreen, favoritesScreen, recentsScreen, profileScreen,
                recipeOverviewScreen];
 var currentScreen = null;
 switchToScreen(discoverScreen);
+
+document.body.addEventListener("click", function(event) {
+    if (event.toElement.nodeName == "A") {
+        pushPopover(event.toElement.innerText);
+    }
+});

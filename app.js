@@ -89,7 +89,8 @@ searchDarkOverlay.on("click", function(e) {
 });
 discoverScreen.addSubLayer(searchDarkOverlay);
 
-var navbarDiscover = new Layer({x:0, y:1038, width:640, height:98, image: "navbarDiscover.png"});
+var navbarDiscover = new Layer({x:0, y:1038, width:640, height:98,
+                               image: "navbarDiscover.png"});
 navbarDiscover.on(Events.Click, navbarClickHandler);
 discoverScreen.addSubLayer(navbarDiscover);
 
@@ -102,7 +103,8 @@ searchBar.on(Events.Click, function() {
     searchDarkOverlay.visible = true;
 });
 
-var searchBarExpanded = new Layer({x:21, y:21, width:598, height:400, image: "searchBarExpanded.png"});
+var searchBarExpanded = new Layer({x:21, y:21, width:598, height:400,
+                                  image: "searchBarExpanded.png"});
 discoverScreen.addSubLayer(searchBarExpanded);
 searchBarExpanded.visible = false;
 searchBarExpanded.on(Events.Click, function(e) {
@@ -210,7 +212,8 @@ shoppingListScreenContent.on(Events.Click, function() {
     shoppingListHeader.visible = false;
 });
 
-var navbarFavorites = new Layer({x:0, y:1038, width:640, height:98, image: "navbarFavorites.png"});
+var navbarFavorites = new Layer({x:0, y:1038, width:640, height:98,
+                                image: "navbarFavorites.png"});
 navbarFavorites.on(Events.Click, navbarClickHandler);
 favoritesScreen.addSubLayer(navbarFavorites);
 
@@ -222,10 +225,12 @@ var recentsScreen = new Layer({x:0, y:0, width:640, height:1136});
 app.addSubLayer(recentsScreen);
 recentsScreen.backgroundColor = "white";
 
-var recentsScreenContents = new Layer({x:0, y:40,width:640, height: 739, image: "recentsScreen.png"});
+var recentsScreenContents = new Layer({x:0, y:40,width:640, height: 739,
+                                      image: "recentsScreen.png"});
 recentsScreen.addSubLayer(recentsScreenContents);
 
-var navbarRecents = new Layer({x:0, y:1038, width:640, height:98, image: "navbarRecents.png"});
+var navbarRecents = new Layer({x:0, y:1038, width:640, height:98,
+                              image: "navbarRecents.png"});
 navbarRecents.on(Events.Click, navbarClickHandler);
 recentsScreen.addSubLayer(navbarRecents);
 
@@ -254,6 +259,33 @@ recipeOverviewScreen.backgroundColor = "white";
 
 var recipeOverviewHeader = new Layer({x:0,y:0,width:640,height:382,image:"recipeOverviewHeader.png"});
 recipeOverviewScreen.addSubLayer(recipeOverviewHeader);
+
+var recipeServingSizeIncrement = new Layer({x:500,y:0,width:140,height:80});
+recipeServingSizeIncrement.backgroundColor = "transparent";
+recipeOverviewHeader.addSubLayer(recipeServingSizeIncrement);
+recipeServingSizeIncrement.on(Events.Click, function(event) {
+    setRecipeServingSize(currentRecipeServingSize + 1);
+});
+
+var recipeServingSizeDecrement = new Layer({x:500,y:174,width:140,height:80});
+recipeServingSizeDecrement.backgroundColor = "transparent";
+recipeOverviewHeader.addSubLayer(recipeServingSizeDecrement);
+recipeServingSizeDecrement.on(Events.Click, function(event) {
+    setRecipeServingSize(currentRecipeServingSize - 1);
+});
+
+var recipeServingSizeNumber = new Layer({x:560,y:110,width:100,height:80});
+recipeServingSizeNumber.backgroundColor = "transparent";
+recipeServingSizeNumber.style.color = "white";
+recipeOverviewHeader.addSubLayer(recipeServingSizeNumber);
+
+var currentRecipeServingSize;
+function setRecipeServingSize(servingSize) {
+    if (servingSize < 1) servingSize = 1;
+    currentRecipeServingSize = servingSize;
+    recipeServingSizeNumber.html = servingSize;
+}
+setRecipeServingSize(1);
 
 var recipeOverviewBottomOverlay = new Layer({x:0,y:980,width:640,height:157,image:"recipeBottomOverlay.png"});
 recipeOverviewScreen.addSubLayer(recipeOverviewBottomOverlay);

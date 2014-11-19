@@ -36,6 +36,11 @@ function listOfRecipes(numRecipes, configurator) {
 
     var toggleFavorite = function(event, layer) {
         layer.opacity = 1 - layer.opacity;
+        event.stopPropagation();
+    };
+
+    var switchToRecipeOverview = function() {
+        switchToScreen(recipeOverviewScreen);
     };
 
     var i;
@@ -45,6 +50,8 @@ function listOfRecipes(numRecipes, configurator) {
                                        width: 640, height: itemHeight,
                                        image: "recipeListItem.png"});
         scrollView.addSubLayer(recipeListItem);
+
+        recipeListItem.on(Events.Click, switchToRecipeOverview);
 
         var favoriteStar = new Layer({x:582, y:21, width:38, height:36,
                                      image: "favoriteStar.png"});
@@ -147,6 +154,7 @@ var favoriteRecipes = listOfRecipes(3, function(recipeView, starView) {
     servingSizeSteppers.push(stepper);
 
     stepper.on(Events.Click, function(event) {
+        event.stopPropagation();
         event = Events.touchEvent(event);
         var curValue = parseInt(stepperValue.html);
         if (event.clientY - stepper.screenFrame.y < stepper.height / 2) {
@@ -217,6 +225,28 @@ navbarProfile.on(Events.Click, navbarClickHandler);
 profileScreen.addSubLayer(navbarProfile);
 
 ///////////////////////////////////////////////////////////////////////////////
+// Recipe overview screen
+///////////////////////////////////////////////////////////////////////////////
+
+var recipeOverviewScreen = new Layer({x:0,y:0,width:640,height:1136});
+app.addSubLayer(recipeOverviewScreen);
+recipeOverviewScreen.backgroundColor = "white";
+
+var recipeOverviewHeader = new Layer({x:0,y:0,width:640,height:382,image:"recipeOverviewHeader.png"});
+recipeOverviewScreen.addSubLayer(recipeOverviewHeader);
+
+var recipeOverviewBottomOverlay = new Layer({x:0,y:980,width:640,height:157,image:"recipeBottomOverlay.png"});
+recipeOverviewScreen.addSubLayer(recipeOverviewBottomOverlay);
+
+var recipeOverviewBackButton = new Layer({x:22,y:1050,width:173,height:65,image:"recipeOverviewBackButton.png"});
+recipeOverviewScreen.addSubLayer(recipeOverviewBackButton);
+recipeOverviewBackButton.on(Events.Click, function() { switchToScreen(lastScreen); });
+
+var recipeOverviewConfirmButton = new Layer({x:445,y:1050,width:173,height:65,
+                                            image:"recipeOverviewConfirmButton.png"});
+recipeOverviewScreen.addSubLayer(recipeOverviewConfirmButton);
+
+///////////////////////////////////////////////////////////////////////////////
 // Helper functions
 ///////////////////////////////////////////////////////////////////////////////
 
@@ -228,6 +258,7 @@ function toggleViews(views, viewToShow) {
 
 function switchToScreen(screen) {
     if (currentScreen != screen) {
+        lastScreen = currentScreen;
         currentScreen = screen;
 
         screens.forEach(function(s) {
@@ -254,6 +285,8 @@ function navbarClickHandler(event) {
 // Initialization
 ///////////////////////////////////////////////////////////////////////////////
 
-var screens = [discoverScreen, favoritesScreen, recentsScreen, profileScreen];
+var lastScreen = discoverScreen;
+var screens = [discoverScreen, favoritesScreen, recentsScreen, profileScreen,
+               recipeOverviewScreen];
 var currentScreen = null;
 switchToScreen(discoverScreen);

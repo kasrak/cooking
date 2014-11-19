@@ -174,7 +174,7 @@ var shoppingListScreen = new Layer({x:0,y:0,width:640,height:1000});
 shoppingListScreen.backgroundColor = "white";
 shoppingListScreen.visible = false;
 favoritesScreen.addSubLayer(shoppingListScreen);
-var shoppingListScreenContent = new Layer({x:40,y:29,width:580,height:357,image:"shoppingListScreen.png"});
+var shoppingListScreenContent = new Layer({x:40,y:29,width:580,height:356,image:"shoppingListScreen.png"});
 shoppingListScreen.addSubLayer(shoppingListScreenContent);
 shoppingListScreenContent.on(Events.Click, function() {
     shoppingListScreen.visible = false;
@@ -194,6 +194,9 @@ var recentsScreen = new Layer({x:0, y:0, width:640, height:1136});
 app.addSubLayer(recentsScreen);
 recentsScreen.backgroundColor = "white";
 
+var recentsScreenContents = new Layer({x:0, y:40,width:640, height: 739, image: "recentsScreen.png"});
+recentsScreen.addSubLayer(recentsScreenContents);
+
 var navbarRecents = new Layer({x:0, y:1038, width:640, height:98, image: "navbarRecents.png"});
 navbarRecents.on(Events.Click, navbarClickHandler);
 recentsScreen.addSubLayer(navbarRecents);
@@ -205,6 +208,9 @@ recentsScreen.addSubLayer(navbarRecents);
 var profileScreen = new Layer({x:0, y:0, width:640, height:1136});
 app.addSubLayer(profileScreen);
 profileScreen.backgroundColor = "white";
+
+var profileScreenContents = new Layer({x:19,y:36,width:598,height:863,image:"profileScreen.png"});
+profileScreen.addSubLayer(profileScreenContents);
 
 var navbarProfile = new Layer({x:0, y:1038, width:640, height:98, image: "navbarProfile.png"});
 navbarProfile.on(Events.Click, navbarClickHandler);

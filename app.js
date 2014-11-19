@@ -420,7 +420,7 @@ var cookingStep = function(image, title, body) {
 
 var steps = [
     ["recipeImage1.jpg",
-     "Preheat the oven to <a>400°F</a>.",
+     "Preheat the oven to <a data-convert='204°C'>400°F</a>.",
      "<h4>Why?</h4>" +
      "<p>When you don't preheat, you cook your food at a lower temperature " +
      "as your oven heats up for the first 5-15 minutes, depending on the " +
@@ -430,13 +430,13 @@ var steps = [
     ],
     ["recipeImage2.jpg",
      "Prepare the turkey breast.",
-     "<p>Pat the turkey breast dry with paper towels, season both sides " +
-     "liberally with kosher salt and freshly ground black pepper.</p<"
+     "<p>Pat the <a>turkey breast</a> dry with paper towels, season both sides " +
+     "liberally with <a>kosher salt</a> and freshly ground <a>black pepper</a>.</p<"
     ],
     ["recipeImage3.jpg",
      "Prepare your skillet.",
-     "<p>Heat a large cast-iron skillet over very high heat. As it heats up, " +
-     "add 1/4 cup of duck fat to the skillet.</p>"
+     "<p>Heat a large <a>cast-iron skillet</a> over very high heat. As it heats up, " +
+     "add <a data-convert='60mL'>1/4 cup</a> of <a>duck fat</a> to the skillet.</p>"
     ],
     ["recipeImage4.jpg",
      "Cook the turkey.",
@@ -447,14 +447,14 @@ var steps = [
      "Remove skillet from heat.",
      "<p>Remove the skillet from heat, and remove the turkey from " +
      "the skillet. You can put it on a plate.</p>" +
-     "<p>Stir 2 tablespoons of unsalted butter into the pan juices.</p>"
+     "<p>Stir <a data-convert='28 grams'>2 tablespoons</a> of <a>unsalted butter</a> into the pan juices.</p>"
     ],
     ["recipeImage6.jpg",
      "Put the turkey back in the skillet.",
-     "<p>Arrange 1 bunch of thyme branches in the " +
+     "<p>Arrange <a data-convert='~1oz'>1 bunch</a> of thyme branches in the " +
      "skillet to make a bed for the turkey.</p>" +
      "<p>Place the turkey, seared-side-up, on the thyme " +
-     "and sprinkle 4 cloves of smashed garlic around the sides.</p>"
+     "and sprinkle <a data-convert='~20 grams'>4 cloves</a> of <a>smashed garlic</a> around the sides.</p>"
     ],
     ["recipeImage7.jpg",
      "Baste the turkey.",
@@ -468,18 +468,18 @@ var steps = [
      "Roast the turkey.",
      "<p>Transfer the skillet to the oven.</p>" +
      "<p>Roast until meat thermometer inserted into the thickest " +
-     "part of the breast without touching bone registers 155°F. " +
+     "part of the breast without touching bone registers <a data-convert='68°C'>155°F</a>. " +
      "It will take about one hour. Baste every 15 minutes."
     ],
     ["recipeImage9.jpg",
      "Prepare the puree.",
      "<p>While the turkey roasts, let’s prepare the green onion puree.</p>" +
-     "<p>In a medium saucepan, heat 1/2 cup of vegetable stock over " +
+     "<p>In a medium saucepan, heat <a data-convert='118mL'>1/2 cup</a> of <a>vegetable stock</a> over " +
      "medium-high heat.</p>"
     ],
     ["recipeImage10.jpg",
      "Prepare the green onions.",
-     "<p>Trim the ends off, then roughly chop 1/2 pound of green onions.</p>"
+     "<p>Trim the ends off, then roughly chop <a data-convert='227 grams'>1/2 pound</a> of <a>green onions</a>.</p>"
     ],
     ["recipeImage11.jpg",
      "Add green onions to saucepan.",
@@ -492,17 +492,17 @@ var steps = [
      "<p>Using a slotted spoon, transfer the green onions to a " +
      "blender, saving the liquids in the saucepan.</p>" +
      "<p>Blend on high until very smooth, about 5 minutes. " +
-     "Add a splash of cooking liquid if necessary to help " +
+     "Add a splash of <a>cooking liquid</a> if necessary to help " +
      "the blender puree.</p>"
     ],
     ["recipeImage13.jpg",
      "Add cream cheese.",
-     "<p>Add the cream cheese and blend for 2 more minutes. " +
+     "<p>Add the <a>cream cheese</a> and blend for 2 more minutes. " +
      "Season with salt to taste.</p>"
     ],
     ["recipeImage14.jpg",
      "Wait for turkey to roast.",
-     "<p>Once the meat thermometer registers 155°F, baste " +
+     "<p>Once the meat thermometer registers <a data-convert='78°C'>155°F</a>, baste " +
      "once more and transfer the turkey to a platter.</p>" +
      "<p>Let the turkey rest for at least 20 minutes before " +
      "slicing and serving.</p>"
@@ -656,6 +656,22 @@ function navbarClickHandler(event) {
     }
 }
 
+var tooltips = [];
+function showTooltip(text, x, y) {
+    var tooltip = new Layer({x: x, y: y, width: 200});
+    tooltip.backgroundColor = "transparent";
+    tooltip.html = "<div class='tooltip'>" + text + "</div>";
+    tooltips.push(tooltip);
+
+    setTimeout(function() {
+        var i = tooltips.indexOf(tooltip);
+        if (i != -1) {
+            tooltip.destroy();
+            tooltips.splice(i, 1);
+        }
+    }, 1500);
+}
+
 ///////////////////////////////////////////////////////////////////////////////
 // Initialization
 ///////////////////////////////////////////////////////////////////////////////
@@ -668,8 +684,18 @@ switchToScreen(discoverScreen);
 switchToScreen(cookingScreen); //xxx
 
 document.body.addEventListener("click", function(event) {
+    tooltips.forEach(function(tooltip) {
+        tooltip.destroy();
+    });
+    tooltips.length = 0;
+
     event = Events.touchEvent(event);
-    if (event.toElement.nodeName == "A") {
-        pushPopover(event.toElement.innerText);
+    var node = event.toElement;
+    if (node.nodeName == "A") {
+        if (node.attributes["data-convert"]) {
+            showTooltip(node.attributes["data-convert"].value, event.clientX - 60, event.clientY - 80);
+        } else {
+            pushPopover(node.innerText);
+        }
     }
 });

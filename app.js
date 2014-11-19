@@ -29,9 +29,10 @@ var discoverScreen = new Layer({x:0, y:0, width:640, height:1136});
 app.addSubLayer(discoverScreen);
 discoverScreen.backgroundColor = "white";
 
-function listOfRecipes(numRecipes) {
+function listOfRecipes(numRecipes, configurator) {
     var scrollView = new Layer({x:0, y:0, width:640, height: 1136});
     scrollView.backgroundColor = "white";
+    scrollView.scrollVertical = true;
 
     var toggleFavorite = function(event, layer) {
         layer.opacity = 1 - layer.opacity;
@@ -50,6 +51,10 @@ function listOfRecipes(numRecipes) {
         favoriteStar.opacity = 0;
         favoriteStar.on(Events.Click, toggleFavorite);
         recipeListItem.addSubLayer(favoriteStar);
+
+        if (configurator) {
+            configurator(recipeListItem, favoriteStar);
+        }
     }
 
     return scrollView;
@@ -58,7 +63,6 @@ function listOfRecipes(numRecipes) {
 var discoverRecipes = listOfRecipes(5);
 discoverRecipes.minY = 122;
 discoverRecipes.height = 916;
-discoverRecipes.scrollVertical = true;
 discoverScreen.addSubLayer(discoverRecipes);
 
 var navbarDiscover = new Layer({x:0, y:1038, width:640, height:98, image: "navbarDiscover.png"});
@@ -89,6 +93,94 @@ searchBarExpanded.on(Events.Click, function() {
 var favoritesScreen = new Layer({x:0, y:0, width:640, height:1136});
 app.addSubLayer(favoritesScreen);
 favoritesScreen.backgroundColor = "white";
+
+var favoritesTitle = new Layer({x:29, y:42, width: 137, height: 28, image: "favoritesTitle.png"});
+favoritesScreen.addSubLayer(favoritesTitle);
+
+var shoppingListButton = new Layer({x:429, y:29, width:191, height:65, image: "shoppingListButton.png"});
+favoritesScreen.addSubLayer(shoppingListButton);
+shoppingListButton.on(Events.Click, function() {
+    servingSizeSteppers.forEach(function(stepper) { stepper.visible = true; });
+    shoppingListHeader.visible = true;
+});
+
+var shoppingListHeader = new Layer({x:0,y:0,width:640,height:100});
+shoppingListHeader.backgroundColor = "white";
+shoppingListHeader.visible = false;
+favoritesScreen.addSubLayer(shoppingListHeader);
+
+var shoppingListDoneButton = new Layer({x:506,y:29,width:114,height:65,image:"shoppingListDoneButton.png"});
+shoppingListHeader.addSubLayer(shoppingListDoneButton);
+shoppingListDoneButton.on(Events.Click, function() {
+    shoppingListScreen.visible = true;
+});
+
+var shoppingListCancelButton = new Layer({x:20,y:29,width:114,height:65,image:"shoppingListCancelButton.png"});
+shoppingListHeader.addSubLayer(shoppingListCancelButton);
+shoppingListCancelButton.on(Events.Click, function() {
+    servingSizeSteppers.forEach(function(stepper) { stepper.visible = false; });
+    shoppingListHeader.visible = false;
+});
+
+var shoppingListChooseTitle = new Layer({x:156,y:36,width:326,height:35,image:"chooseServingSizes.png"});
+shoppingListHeader.addSubLayer(shoppingListChooseTitle);
+
+var shoppingListSubtitle = new Layer({x:200,y:69,width:250,height:30});
+shoppingListSubtitle.backgroundColor = "transparent";
+shoppingListSubtitle.style.color = "#727D90";
+shoppingListHeader.addSubLayer(shoppingListSubtitle);
+
+var currentTotalServingsCount = 0;
+function setTotalServingsCount(count) {
+    currentTotalServingsCount = count;
+    shoppingListSubtitle.html = count + " servings in total";
+}
+setTotalServingsCount(3);
+
+var servingSizeSteppers = [];
+var favoriteRecipes = listOfRecipes(3, function(recipeView, starView) {
+    starView.opacity = 1;
+
+    var stepper = new Layer({x:497,y:0,width:141,height:254,image:"servingSizeStepper.png"});
+    stepper.visible = false;
+    recipeView.addSubLayer(stepper);
+    servingSizeSteppers.push(stepper);
+
+    stepper.on(Events.Click, function(event) {
+        event = Events.touchEvent(event);
+        var curValue = parseInt(stepperValue.html);
+        if (event.clientY - stepper.screenFrame.y < stepper.height / 2) {
+            curValue++;
+            setTotalServingsCount(currentTotalServingsCount + 1);
+        } else {
+            if (curValue > 0) {
+                curValue--;
+                setTotalServingsCount(currentTotalServingsCount - 1);
+            }
+        }
+        stepperValue.html = curValue;
+    });
+
+    var stepperValue = new Layer({x:62,y:101,width:140,height:120});
+    stepperValue.backgroundColor = "transparent";
+    stepperValue.html = "1";
+    stepper.addSubLayer(stepperValue);
+});
+favoriteRecipes.minY = 122;
+favoriteRecipes.scrollVertical = false;
+favoritesScreen.addSubLayer(favoriteRecipes);
+
+var shoppingListScreen = new Layer({x:0,y:0,width:640,height:1000});
+shoppingListScreen.backgroundColor = "white";
+shoppingListScreen.visible = false;
+favoritesScreen.addSubLayer(shoppingListScreen);
+var shoppingListScreenContent = new Layer({x:40,y:29,width:580,height:357,image:"shoppingListScreen.png"});
+shoppingListScreen.addSubLayer(shoppingListScreenContent);
+shoppingListScreenContent.on(Events.Click, function() {
+    shoppingListScreen.visible = false;
+    servingSizeSteppers.forEach(function(stepper) { stepper.visible = false; });
+    shoppingListHeader.visible = false;
+});
 
 var navbarFavorites = new Layer({x:0, y:1038, width:640, height:98, image: "navbarFavorites.png"});
 navbarFavorites.on(Events.Click, navbarClickHandler);

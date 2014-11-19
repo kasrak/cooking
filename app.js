@@ -51,12 +51,13 @@ function listOfRecipes(numRecipes, configurator) {
                                        image: "recipeListItem.png"});
         scrollView.addSubLayer(recipeListItem);
 
-        recipeListItem.on(Events.Click, switchToRecipeOverview);
+        recipeListItem.on("click", switchToRecipeOverview);
 
         var favoriteStar = new Layer({x:582, y:21, width:38, height:36,
                                      image: "favoriteStar.png"});
         favoriteStar.opacity = 0;
         favoriteStar.on(Events.Click, toggleFavorite);
+        favoriteStar.on("click", function(e) { e.stopPropagation(); });
         recipeListItem.addSubLayer(favoriteStar);
 
         if (configurator) {
@@ -72,6 +73,22 @@ discoverRecipes.minY = 122;
 discoverRecipes.height = 916;
 discoverScreen.addSubLayer(discoverRecipes);
 
+function dismissSearch() {
+    searchBar.visible = true;
+    searchBarExpanded.visible = false;
+    hideKeyboard();
+    searchDarkOverlay.visible = false;
+}
+
+var searchDarkOverlay = new Layer({x:0,y:0,width:640,height:1136});
+searchDarkOverlay.backgroundColor = "rgba(0,0,0,0.6)";
+searchDarkOverlay.visible = false;
+searchDarkOverlay.on("click", function(e) {
+    e.stopPropagation();
+    dismissSearch();
+});
+discoverScreen.addSubLayer(searchDarkOverlay);
+
 var navbarDiscover = new Layer({x:0, y:1038, width:640, height:98, image: "navbarDiscover.png"});
 navbarDiscover.on(Events.Click, navbarClickHandler);
 discoverScreen.addSubLayer(navbarDiscover);
@@ -82,16 +99,17 @@ searchBar.on(Events.Click, function() {
     searchBar.visible = false;
     searchBarExpanded.visible = true;
     showKeyboard();
+    searchDarkOverlay.visible = true;
 });
 
 var searchBarExpanded = new Layer({x:21, y:21, width:598, height:400, image: "searchBarExpanded.png"});
 discoverScreen.addSubLayer(searchBarExpanded);
 searchBarExpanded.visible = false;
-searchBarExpanded.on(Events.Click, function() {
-    searchBar.visible = true;
-    searchBarExpanded.visible = false;
-    hideKeyboard();
+searchBarExpanded.on(Events.Click, function(e) {
+    e.stopPropagation();
+    dismissSearch();
 });
+searchBarExpanded.on("click", function(e) { e.stopPropagation(); });
 
 ///////////////////////////////////////////////////////////////////////////////
 // Favorites screen
@@ -168,6 +186,8 @@ var favoriteRecipes = listOfRecipes(3, function(recipeView, starView) {
         }
         stepperValue.html = curValue;
     });
+
+    stepper.on("click", function(e) { e.stopPropagation(); });
 
     var stepperValue = new Layer({x:62,y:101,width:140,height:120});
     stepperValue.backgroundColor = "transparent";

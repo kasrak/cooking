@@ -735,7 +735,6 @@ var screens = [discoverScreen, favoritesScreen, recentsScreen, profileScreen,
                recipeOverviewScreen, cookingScreen];
 var currentScreen = null;
 switchToScreen(discoverScreen);
-switchToScreen(cookingScreen); //xxx
 
 document.body.addEventListener("click", function(event) {
     tooltips.forEach(function(tooltip) {

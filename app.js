@@ -565,7 +565,7 @@ var cookingQuestionButton = new Layer({x:20,y:65,width:72,height:65,
                                       image:"recipeQuestionButton.png"});
 cookingFooter.addSubLayer(cookingQuestionButton);
 
-var cookingDoneButton = new Layer({x:548,y:65,width:72,height:65,
+var cookingDoneButton = new Layer({x:426,y:65,width:194,height:65,
                                       image:"recipeDoneButton.png"});
 cookingFooter.addSubLayer(cookingDoneButton);
 cookingDoneButton.on(Events.Click, function() {

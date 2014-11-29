@@ -1,3 +1,4 @@
 Changes to prototype:
 
 - Confirmation dialog when quitting recipe
+- Recipe checkmark button now says "Done Step"

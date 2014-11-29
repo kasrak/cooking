@@ -1,0 +1,3 @@
+Changes to prototype:
+
+- Confirmation dialog when quitting recipe

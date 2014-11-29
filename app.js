@@ -386,7 +386,7 @@ var cookingQuitButton = new Layer({x:582,y:10,width:48,height:48,
                                   image:"quitRecipeButton.png"});
 cookingHeader.addSubLayer(cookingQuitButton);
 cookingQuitButton.on(Events.Click, function() {
-    switchToScreen(lastScreen);
+    showQuitDialog();
 });
 
 var cookingHeaderText = new Layer({x:20,y:20,width:300,height:30});
@@ -724,6 +724,35 @@ function showTooltip(text, x, y) {
             tooltips.splice(i, 1);
         }
     }, 1500);
+}
+
+var quitDialog = new Layer({x:0,y:0,width:540,height:249,
+                           image:"quitRecipeDialog.png"});
+quitDialog.visible = false;
+quitDialog.center();
+
+var quitDialogCancelButton = new Layer({x:0,y:160,width:270,height:90});
+quitDialogCancelButton.backgroundColor = 'transparent';
+quitDialog.addSubLayer(quitDialogCancelButton);
+quitDialogCancelButton.on(Events.Click, function() { hideQuitDialog(); });
+
+var quitDialogQuitButton = new Layer({x:275,y:160,width:270,height:90});
+quitDialogQuitButton.backgroundColor = 'transparent';
+quitDialog.addSubLayer(quitDialogQuitButton);
+quitDialogQuitButton.on(Events.Click, function() {
+    switchToScreen(lastScreen);
+    hideQuitDialog();
+});
+
+function showQuitDialog() {
+    popoverOverlay.visible = true;
+    quitDialog.visible = true;
+    quitDialog.bringToFront();
+}
+
+function hideQuitDialog() {
+    popoverOverlay.visible = false;
+    quitDialog.visible = false;
 }
 
 ///////////////////////////////////////////////////////////////////////////////

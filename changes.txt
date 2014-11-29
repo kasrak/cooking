@@ -6,3 +6,5 @@ Changes to prototype:
   (you can find where you were more easily)
 - Scroll indicator and 'Back to current step' button to help with navigation,
   clarify distinction between "Done Step" and scrolling.
+- changed navbar "Recents" to "History" for consistency with that
+  screen's title.

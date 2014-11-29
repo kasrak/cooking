@@ -402,6 +402,7 @@ cookingScrollView.backgroundColor = "transparent";
 cookingScrollView.scrollVertical = true;
 cookingScreen.addSubLayer(cookingScrollView);
 
+var _cookingStepNumber = 0;
 var cookingStep = function(image, title, body) {
     var step = new Layer({x:0, y:0, width: 640, height: 1066});
     step.backgroundColor = "transparent";
@@ -409,9 +410,11 @@ var cookingStep = function(image, title, body) {
     var stepImage = new Layer({x:0, y: 0, width: 640, height: 425, image: image});
     step.addSubLayer(stepImage);
 
+    _cookingStepNumber++;
+
     var stepText = new Layer({x:20, y: 445, width: 590, height: 470});
     stepText.backgroundColor = "transparent";
-    stepText.html = "<div class='recipe content'><h3>" + title + "</h3>" +
+    stepText.html = "<div class='recipe content'><h3>" + _cookingStepNumber + ". " + title + "</h3>" +
         body + "</div>";
     step.addSubLayer(stepText);
 

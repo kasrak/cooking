@@ -382,6 +382,10 @@ var cookingProgressBar = new Layer({x:0,y:0,width:0,height:70});
 cookingProgressBar.backgroundColor = "#BED9C0";
 cookingHeader.addSubLayer(cookingProgressBar);
 
+var scrollIndicator = new Layer({x:0,y:0,width:10,height:70});
+scrollIndicator.backgroundColor = "orange";
+cookingHeader.addSubLayer(scrollIndicator);
+
 var cookingQuitButton = new Layer({x:582,y:10,width:48,height:48,
                                   image:"quitRecipeButton.png"});
 cookingHeader.addSubLayer(cookingQuitButton);
@@ -401,6 +405,20 @@ var cookingScrollView = new Layer({x:0,y:70,width:640,height:1066});
 cookingScrollView.backgroundColor = "transparent";
 cookingScrollView.scrollVertical = true;
 cookingScreen.addSubLayer(cookingScrollView);
+
+var _lastVisibleStep = 0;
+cookingScrollView.on(Events.Scroll, function() {
+    var pos = cookingScrollView.scrollY / 15400;
+    scrollIndicator.x = pos * (14 * cookingHeader.width / 15);
+
+    var visibleStep = Math.round(cookingScrollView.scrollY / 1100);
+    if (_lastVisibleStep != visibleStep) {
+        _lastVisibleStep = visibleStep;
+
+        backToCurrentStep.visible = (visibleStep != currentStep);
+        backToCurrentStep.bringToFront();
+    }
+});
 
 var _cookingStepNumber = 0;
 var cookingStep = function(image, title, body) {
@@ -529,6 +547,8 @@ var goToStep = function(step) {
     if (step < 0) step = 0;
     if (step > steps.length) step = steps.length;
 
+    backToCurrentStep.html = "Back to step " + (step + 1);
+
     if (step === 0) {
         timers.forEach(function(timer) {
             timer.destroy();
@@ -552,10 +572,16 @@ var goToStep = function(step) {
             time: 0.3,
         });
 
-        cookingScrollView.animate({
-            properties: { scrollY: step * 1100 },
-            time: 0.3,
-        });
+        if (step === 0) {
+            setTimeout(function() {
+                cookingScrollView.scrollY = 0;
+            }, 0);
+        } else {
+            cookingScrollView.animate({
+                properties: { scrollY: step * 1100 },
+                time: 0.3,
+            });
+        }
     }
 };
 
@@ -568,7 +594,7 @@ var cookingQuestionButton = new Layer({x:20,y:65,width:72,height:65,
                                       image:"recipeQuestionButton.png"});
 cookingFooter.addSubLayer(cookingQuestionButton);
 
-var cookingDoneButton = new Layer({x:426,y:65,width:194,height:65,
+var cookingDoneButton = new Layer({x:422,y:65,width:194,height:65,
                                       image:"recipeDoneButton.png"});
 cookingFooter.addSubLayer(cookingDoneButton);
 cookingDoneButton.on(Events.Click, function() {
@@ -615,6 +641,16 @@ function addTimer(startSeconds) {
         }
     }, 1000);
 }
+
+var backToCurrentStep = new Layer({x:20,y:65,width:596,height:65,
+                                   image:"backToCurrentStep.png"});
+backToCurrentStep.visible = false;
+backToCurrentStep.style["text-align"] = "center";
+backToCurrentStep.style.color = "#555";
+backToCurrentStep.style["font-weight"] = "bold";
+backToCurrentStep.style["padding-top"] = "16px";
+cookingFooter.addSubLayer(backToCurrentStep);
+backToCurrentStep.on(Events.Click, function() { goToStep(currentStep); });
 
 var doneRecipeScreen = new Layer({x:0,y:0,width:640,height:1136,
                                  image:"doneRecipeScreen.png"});
@@ -767,6 +803,7 @@ var screens = [discoverScreen, favoritesScreen, recentsScreen, profileScreen,
                recipeOverviewScreen, cookingScreen];
 var currentScreen = null;
 switchToScreen(discoverScreen);
+switchToScreen(cookingScreen); // XXX
 
 document.body.addEventListener("click", function(event) {
     tooltips.forEach(function(tooltip) {
